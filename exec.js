@@ -3,25 +3,25 @@ im = require('imagemagick');
 const { exec } = require('child_process');
 
 const nameCoords = {
-    pos: {x: 20, y: 18},
-    size: {x: 180, y: 18}
+    pos: {x: 50, y: 55},
+    size: {x: 690, y: 60}
 };
 
 const typeCoords = {
-    pos: {x: 20, y: 210},
-    size: {x: 180, y: 18}
+    pos: {x: 50, y: 628},
+    size: {x: 600, y: 50}
 };
 
 // power/toughness box
 const smallboxCoords = {
-    pos: {x: 214, y: 333},
-    size: {x: 33, y: 18}
+    pos: {x: 625, y: 990},
+    size: {x: 110, y: 40}
 };
 
 // power/toughness box
 const rulesCoords = {
-    pos: {x: 20, y: 232},
-    size: {x: 235, y: 100}
+    pos: {x: 60, y: 695},
+    size: {x: 660, y: 290}
 };
 
 function generateCardNameLabel (card) {
@@ -33,7 +33,7 @@ function generateCardNameLabel (card) {
 function generateCardRulesLabel (card) {
     let {rules} = card;
 
-    return `\\( -page +${rulesCoords.pos.x}+${rulesCoords.pos.y} -background transparent -size ${rulesCoords.size.x}x${rulesCoords.size.y} -pointsize 11 -gravity northwest label:'${rules}' \\)`;
+    return `\\( -page +${rulesCoords.pos.x}+${rulesCoords.pos.y} -background transparent -size ${rulesCoords.size.x}x${rulesCoords.size.y} -gravity northwest caption:'${rules}' \\)`;
 }
 
 function generateCardTypeLabel (card) {
@@ -233,7 +233,7 @@ function preprocessCard (card) {
     }
 }
 
-fs.readFile("input.json", "utf8", (err, data) => {
+fs.readFile("test.json", "utf8", (err, data) => {
     if (err) {
         return console.log(err);
     }
