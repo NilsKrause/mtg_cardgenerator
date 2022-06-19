@@ -8,7 +8,7 @@
     },
     {
         "name": "Mechbeast Forerunner",
-        "cost": "G",
+        "cost": "1WUBRG",
         "type": "Artifact Creature - Beast (1/1)",
         "rules": "\nWhenever a creature enters the battlefield, two target Beasts get +2/+2 until end of turn and regenerate target Beast",
         "flavor": null

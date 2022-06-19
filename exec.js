@@ -24,10 +24,19 @@ const rulesCoords = {
     size: {x: 660, y: 290}
 };
 
+// the pos of the cost need to be calculated.
+// this is the left most position and you need to subtract the size of the inserted symbol from the x position.
+const costCoords = {
+    pos: {x: 740, y: 55},
+    size: {x: 42, y: 60}
+}
+
+let manacostLength = 0;
+
 function generateCardNameLabel (card) {
     let {name} = card;
 
-    return `\\( -page +${nameCoords.pos.x}+${nameCoords.pos.y} -background transparent -size ${nameCoords.size.x}x${nameCoords.size.y} -gravity west label:'${name}' \\)`;
+    return `\\( -page +${nameCoords.pos.x}+${nameCoords.pos.y} -background transparent -size ${nameCoords.size.x - manacostLength}x${nameCoords.size.y} -gravity west label:'${name}' \\)`;
 }
 
 function generateCardRulesLabel (card) {
@@ -40,6 +49,60 @@ function generateCardTypeLabel (card) {
     let {type} = card;
 
     return `\\( -page +${typeCoords.pos.x}+${typeCoords.pos.y} -background transparent -size ${typeCoords.size.x}x${typeCoords.size.y} -gravity west label:'${type.supertype} - ${type.subtypes}' \\)`;
+}
+
+function generateManaSymbols (card) {
+    let {colorless, black, green, red, blue, white, hybrid} = card.cost;
+    let posX = costCoords.pos.x - costCoords.size.x;
+    let posY = costCoords.pos.y + 10;
+
+    const foo = (symbol) => `\\( ${symbol} -page +${posX}+${posY} -background transparent -size ${costCoords.size.x}x${costCoords.size.y} -gravity center \\)`
+
+    let command = ""
+    //0wubrg
+    if (green > 0) {
+        for (let i = green; i > 0; i--) {
+            command += " " + foo('assets/g.png');
+            posX -= costCoords.size.x
+        }
+    }
+
+    if (red > 0) {
+        for (let i = red; i > 0; i--) {
+            command += " " + foo('assets/r.png');
+            posX -= costCoords.size.x
+        }
+    }
+
+    if (black > 0) {
+        for (let i = black; i > 0; i--) {
+            command += " " + foo('assets/b.png');
+            posX -= costCoords.size.x
+        }
+    }
+
+    if (blue > 0) {
+        for (let i = blue; i > 0; i--) {
+            command += " " + foo('assets/u.png');
+            posX -= costCoords.size.x
+        }
+    }
+
+    if (white > 0) {
+        for (let i = white; i > 0; i--) {
+            command += " " + foo('assets/w.png');
+            posX -= costCoords.size.x
+        }
+    }
+
+    if (colorless > 0) {
+        command += " " + foo('assets/c.png')
+        command += ` \\( -page +${posX}+${posY} -background transparent -size ${40}x${40} -gravity center label:${colorless} \\)`
+    }
+
+    manacostLength = costCoords.pos.x - posX;
+
+    return command
 }
 
 function generateCardSmallBoxLabel (card) {
@@ -60,7 +123,13 @@ function generateCard (card) {
     let frame = "assets/frame.png";
     let outputfile = `output/${Date.now()}_name.png`;
 
-    exec(`magick -page +0+0 ${frame} ${generateCardNameLabel(card)} ${generateCardTypeLabel(card)} ${generateCardSmallBoxLabel(card)} ${generateCardRulesLabel(card)} -flatten ${outputfile}`, {});
+    exec(`magick -page +0+0 ${frame} ${generateCardTypeLabel(card)} ${generateCardSmallBoxLabel(card)} ${generateCardRulesLabel(card)} ${generateManaSymbols(card)} ${generateCardNameLabel(card)} -flatten ${outputfile}`,
+        {},
+        (output) => {
+        if (output !== null) {
+            console.log(output)
+        }
+        });
 
 }
 
@@ -139,11 +208,6 @@ function preprocessCost (cost) {
             continue;
         }
 
-        if (typeof elem === 'number') {
-            colorless += elem;
-            continue;
-        }
-
         switch (elem) {
             case 'b':
                 black++;
@@ -160,6 +224,8 @@ function preprocessCost (cost) {
             case 'w':
                 white++
                 break;
+            default:
+                colorless += Number(elem);
         }
     }
 
