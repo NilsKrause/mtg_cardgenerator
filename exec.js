@@ -227,11 +227,11 @@ function equiTopPath (n) {
     return `assets/equipment/et${n}.png`;
 }
 
-function generateEquipment (card) {
+function generateEquipment () {
     const layer1 = randomIntBetween(1, 4);
     const layer2 = randomIntBetween(1, 4);
 
-    return `-page +0+0 ${equiBgPath(layer1)} -page +0+0 const ${equiTopPath(layer2)}`;
+    return `-page +0+0 ${equiBgPath(layer1)} -page +0+0 ${equiTopPath(layer2)}`;
 }
 
 function pickFace () {
@@ -265,6 +265,8 @@ function generateCreatue (card) {
 }
 
 function generateArtifact () {
+    // only since i have nothing other..
+    return generateEquipment();
 }
 
 function spellEffectPath (effect) {
@@ -355,7 +357,7 @@ function processCard (card, cardNumber, cardAmount) {
     console.log(`${String(cardNumber).padStart(4, '0')}/${cardAmount} Finished ${processedCard.name} in ${(new Date() - start) / 1000}s.`)
 }
 
-fs.readFile("test_cards.json", {encoding: "utf8"}, (err, data) => {
+fs.readFile("cards.json", {encoding: "utf8"}, (err, data) => {
     if (err) {
         return console.log(err);
     }

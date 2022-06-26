@@ -34,8 +34,23 @@ function preprocessHybrid (hybrid) {
 }
 
 function preprocessCost (cost) {
+
+
     let colorless = 0, black = 0, green = 0, red = 0, blue = 0, white = 0, pink = 0;
     let hybrid = [];
+
+    if (cost === null) {
+        return {
+            colorless,
+            black,
+            green,
+            red,
+            blue,
+            white,
+            hybrid,
+            pink
+        }
+    }
 
     let tmp = "";
     for (var i = 0; i < cost.length; i++) {

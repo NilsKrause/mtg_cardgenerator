@@ -63,12 +63,68 @@ function generateCardTypeLabel (card) {
     return `\\( -page +${typeCoords.pos.x}+${typeCoords.pos.y} -background transparent -size ${typeCoords.size.x}x${typeCoords.size.y} -gravity west label:'${type.supertype} - ${type.subtypes}' \\)`;
 }
 
+function pickHybridName (hybrid) {
+    if (hybrid.black > 0) {
+        if (hybrid.green > 0) {
+            // BG
+            return 'BG';
+        }
+        if (hybrid.red > 0) {
+            // BR
+            return 'BR';
+        }
+        if (hybrid.blue > 0) {
+            // BU
+            return 'UB';
+        }
+        if (hybrid.white > 0) {
+            // BW
+            return 'WB';
+        }
+    }
+    if (hybrid.green > 0) {
+        if (hybrid.red > 0) {
+            // GR
+            return 'RG';
+        }
+        if (hybrid.blue > 0) {
+            // GU
+            return 'GU';
+        }
+        if (hybrid.white > 0) {
+            // BW
+            return 'WB';
+        }
+    }
+    if (hybrid.red > 0) {
+        if (hybrid.blue > 0) {
+            // RU
+            return 'UR';
+        }
+        if (hybrid.white > 0) {
+            // RW
+            return 'RW';
+        }
+    }
+    if (hybrid.blue > 0) {
+        if (hybrid.white > 0) {
+            // UW
+            return 'WU';
+        }
+    }
+}
+
+function generateHybridNames (hybrids) {
+    // {black, green, red, blue, white}
+    return hybrids.map(pickHybridName)
+}
+
 function generateManaSymbols (card) {
     let {colorless, black, green, red, blue, white, hybrid} = card.cost;
     let posX = costCoords.pos.x - costCoords.size.x;
     let posY = costCoords.pos.y + 10;
 
-    const foo = (symbol) => `\\( ${symbol} -page +${posX}+${posY} -background transparent -size ${costCoords.size.x}x${costCoords.size.y} -gravity center \\)`
+    const foo = (symbol) => `\\( -page +${posX}+${posY} ${symbol} -background transparent -size ${costCoords.size.x}x${costCoords.size.y} -gravity center \\)`
 
     let command = ""
     //0wubrg
@@ -107,10 +163,20 @@ function generateManaSymbols (card) {
         }
     }
 
+    if (hybrid.length > 0) {
+        const ree = generateHybridNames(hybrid).map((hybrid) => {
+            let cmd = foo(`assets/mana/${hybrid}.png`);
+            posX -= costCoords.size.x;
+            return cmd;
+        }).join(' ');
+        command += ree;
+    }
+
     if (colorless > 0) {
         command += " " + foo('assets/mana/C.png')
         command += ` \\( -page +${posX}+${posY} -background transparent -size ${40}x${40} -gravity center label:${colorless} \\)`
     }
+
 
     manacostLength = costCoords.pos.x - posX;
 

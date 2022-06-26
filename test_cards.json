@@ -1,5 +1,41 @@
 [
   {
+    "name": "Servant to the Guardian",
+    "cost": "(W/R)(G/W)",
+    "type": "Creature - Goblin Shaman (1/2)",
+    "rules": "\nT: target creature gets +1/+0 until end of turn",
+    "flavor": null,
+    "metatype": null,
+    "name 2": null,
+    "cost2": null,
+    "type2": null,
+    "rules2": null
+  },
+  {
+    "name": "Servant to the Guardian",
+    "cost": "(U/B)(R/G)",
+    "type": "Creature - Goblin Shaman (1/2)",
+    "rules": "\nT: target creature gets +1/+0 until end of turn",
+    "flavor": null,
+    "metatype": null,
+    "name 2": null,
+    "cost2": null,
+    "type2": null,
+    "rules2": null
+  },
+  {
+    "name": "Servant to the Guardian",
+    "cost": "(U/G)(B/G)",
+    "type": "Creature - Goblin Shaman (1/2)",
+    "rules": "\nT: target creature gets +1/+0 until end of turn",
+    "flavor": null,
+    "metatype": null,
+    "name 2": null,
+    "cost2": null,
+    "type2": null,
+    "rules2": null
+  },
+  {
     "name": "Hellish Cube",
     "cost": "1W",
     "type": "Artifact - Equipment",
