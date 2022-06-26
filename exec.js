@@ -199,12 +199,39 @@ function pickBackground (card) {
     }
 }
 
-function generateEnchantment (card) {
+function enchBottomPath (n) {
+    return `assets/enchantment/enb${n}.png`
+}
 
+function enchTopPath (n) {
+    return `assets/enchantment/ent${n}.png`
+}
+
+function enchObjPath (n) {
+    return `assets/enchantment/eno${n}.png`
+}
+
+function generateEnchantment () {
+    const layer1 = randomIntBetween(1,5);
+    const layer2 = randomIntBetween(1,5);
+    const layer3 = randomIntBetween(1,5);
+
+    return `-page +0+0 ${enchBottomPath(layer1)} -page +0+0 ${enchTopPath(layer2)} -page +0+0 ${enchObjPath(layer3)}`;
+}
+
+function equiBgPath (n) {
+    return `assets/equipment/es${n}.png`;
+}
+
+function equiTopPath (n) {
+    return `assets/equipment/et${n}.png`;
 }
 
 function generateEquipment (card) {
+    const layer1 = randomIntBetween(1, 4);
+    const layer2 = randomIntBetween(1, 4);
 
+    return `-page +0+0 ${equiBgPath(layer1)} -page +0+0 const ${equiTopPath(layer2)}`;
 }
 
 function pickFace () {
@@ -237,8 +264,7 @@ function generateCreatue (card) {
     return `-page +0+0 ${pickType(card)} -page +0+0 ${pickFace()}`
 }
 
-function generateArtifact (card) {
-
+function generateArtifact () {
 }
 
 function spellEffectPath (effect) {
@@ -264,7 +290,7 @@ function generateLand() {
 
 function generateObject (card) {
     const {type} = card;
-    const {supertype} = type;
+    const {supertype, subtypes} = type;
     if (supertype.includes('Creature')) {
         return generateCreatue(card);
     }
@@ -272,13 +298,16 @@ function generateObject (card) {
         return generateEnchantment(card);
     }
     else if (supertype.includes('Artifact')) {
-        return generateArtifact(card);
+        if (subtypes.includes('Equipment')) {
+            return generateEquipment();
+        }
+        return generateArtifact();
     }
     else if (supertype.includes('Instant') || supertype.includes('Sorcery')) {
-        return generateSpell(card);
+        return generateSpell()
     }
     else if (supertype.includes('Land')) {
-        return generateLand(card);
+        return generateLand();
     }
     else if (supertype.includes('Planeswalker')) {
         return generatePlaneswalker();
@@ -291,7 +320,7 @@ function generateCard (card) {
     // let {cost, name, rules, flaor, type} = card;
     let frame = pickFrame(card);
     console.log('framepath: ', frame);
-    let outputfile = `output/${Date.now()}_${card.name.replace(' ', '_')}.png`;
+    let outputfile = `output/${Date.now()}_${card.name.replaceAll(' ', '_')}.png`;
 
     const command = `magick -page +0+0 ${transparentBG} ${pickBackground(card)} ${generateObject(card)} -page +0+0 ${frame} ${generateCardTypeLabel(card)} ${generateCardSmallBoxLabel(card)} ${generateCardTextBox(card)} ${generateManaSymbols(card)} ${generateCardNameLabel(card)} -flatten ${outputfile}`;
     console.log('command: ', command)
@@ -325,7 +354,6 @@ function processCard (card, cardNumber, cardAmount) {
     generateCard(processedCard);
     console.log(`${String(cardNumber).padStart(4, '0')}/${cardAmount} Finished ${processedCard.name} in ${(new Date() - start) / 1000}s.`)
 }
-
 
 fs.readFile("test_cards.json", {encoding: "utf8"}, (err, data) => {
     if (err) {
