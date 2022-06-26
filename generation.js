@@ -8,7 +8,7 @@ function generateCardNameLabel (card) {
 }
 
 function generateSeperator (posY) {
-    return `\\( assets/seperator.png -page +${rulesCoords.pos.x}+${posY} -background transparent -size ${rulesCoords.size.x}x${rulesCoords.size.y} -gravity center \\)`
+    return `\\( assets/frames/seperator.png -page +${rulesCoords.pos.x}+${posY} -background transparent -size ${rulesCoords.size.x}x${rulesCoords.size.y} -gravity center \\)`
 }
 
 function generateCardTextBox (card) {

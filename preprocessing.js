@@ -73,7 +73,6 @@ function preprocessCost (cost) {
                 pink++
                 break;
             default:
-                console.log('ok!', elem);
                 colorless += Number(elem);
         }
     }

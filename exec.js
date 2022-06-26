@@ -24,24 +24,24 @@ function isMulticolor (cost) {
 }
 
 function isWhite (cost) {
-    const {colorless, black, green, red, blue, white, pink} = cost;
-    return colorless <= 0 && black <= 0 && green <= 0 && red <= 0 && blue <= 0 && white > 0 && pink <= 0;
+    const {black, green, red, blue, white, pink} = cost;
+    return black <= 0 && green <= 0 && red <= 0 && blue <= 0 && white > 0 && pink <= 0;
 }
 function isBlue (cost) {
-    const {colorless, black, green, red, blue, white, pink} = cost;
-    return colorless <= 0 && black <= 0 && green <= 0 && red <= 0 && blue > 0 && white <= 0 && pink <= 0;
+    const {black, green, red, blue, white, pink} = cost;
+    return black <= 0 && green <= 0 && red <= 0 && blue > 0 && white <= 0 && pink <= 0;
 }
 function isBlack (cost) {
-    const {colorless, black, green, red, blue, white, pink} = cost;
-    return colorless <= 0 && black > 0 && green <= 0 && red <= 0 && blue <= 0 && white <= 0 && pink <= 0;
+    const {black, green, red, blue, white, pink} = cost;
+    return black > 0 && green <= 0 && red <= 0 && blue <= 0 && white <= 0 && pink <= 0;
 }
 function isRed (cost) {
-    const {colorless, black, green, red, blue, white, pink} = cost;
-    return colorless <= 0 && black <= 0 && green <= 0 && red > 0 && blue <= 0 && white <= 0 && pink <= 0;
+    const {black, green, red, blue, white, pink} = cost;
+    return black <= 0 && green <= 0 && red > 0 && blue <= 0 && white <= 0 && pink <= 0;
 }
 function isGreen (cost) {
-    const {colorless, black, green, red, blue, white, pink} = cost;
-    return colorless <= 0 && black <= 0 && green > 0 && red <= 0 && blue <= 0 && white <= 0  && pink <= 0;
+    const {black, green, red, blue, white, pink} = cost;
+    return black <= 0 && green > 0 && red <= 0 && blue <= 0 && white <= 0  && pink <= 0;
 }
 function isColorless (cost) {
     const {colorless, black, green, red, blue, white, pink} = cost;
@@ -144,6 +144,7 @@ function pickFrame (card) {
         }
     }
 
+    console.log('card', card);
     throw new Error('wtf..');
 }
 
