@@ -146,6 +146,9 @@ function preprocessType (card) {
 }
 
 function escapeSpecialCharacters (data) {
+    if (typeof data !== "string") {
+        return data;
+    }
     return data
         // .replaceAll('\\', '\\u005C')
         // .replaceAll('(', '\\u0028')

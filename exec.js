@@ -278,8 +278,8 @@ function spellBgPath (bg) {
 }
 
 function generateSpell () {
-    const effect = randomIntBetween(1,7);
-    const bg = randomIntBetween(1,8);
+    const effect = randomIntBetween(1,8);
+    const bg = randomIntBetween(1,7);
 
     return `-page +0+0 ${spellBgPath(bg)} -page +0+0 ${spellEffectPath(effect)}`
 }
@@ -338,8 +338,6 @@ function generateCard (card) {
         console.log('Error: ', err);
         console.log('Card: ', JSON.stringify(card));
     }
-
-    console.log('\n-------------\n');
 }
 
 function processCard (card, cardNumber, cardAmount) {
@@ -348,7 +346,9 @@ function processCard (card, cardNumber, cardAmount) {
     let {cost, rules} = card;
     const processedCard = {
         ...card,
-        ...{rules: escapeSpecialCharacters(rules.trim())},
+        ...{name: escapeSpecialCharacters(card.name)},
+        ...{flavor: escapeSpecialCharacters(card.flavor)},
+        ...{rules: escapeSpecialCharacters(rules?.trim() ?? '')},
         ...{cost: preprocessCost(cost)},
         ...preprocessType(card)
     }
@@ -364,7 +364,14 @@ fs.readFile("cards.json", {encoding: "utf8"}, (err, data) => {
 
     let cards = JSON.parse(data);
 
-    cards.forEach((card, i) => processCard(card, i+1, cards.length))
+    cards.forEach((card, i) => {
+        try {
+            processCard(card, i+1, cards.length)
+        } catch (err) {
+            console.log('error while processing card: ', err, card);
+        }
+        console.log('\n-------------\n');
+    })
 });
 
 console.log('finished reading data')
