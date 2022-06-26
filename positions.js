@@ -28,3 +28,5 @@ const costCoords = {
     pos: {x: 740, y: 55},
     size: {x: 42, y: 60}
 }
+
+module.exports = {nameCoords, rulesCoords, typeCoords, costCoords, smallboxCoords}

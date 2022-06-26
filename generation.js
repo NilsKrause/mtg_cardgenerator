@@ -1,4 +1,4 @@
-const {nameCoords, rulesCoords, typeCoords, costCoords, smallboxCoords} = require("./positions");
+const {nameCoords, rulesCoords, typeCoords, costCoords, smallboxCoords} = require("./positions.js");
 
 let manacostLength = 0;
 function generateCardNameLabel (card) {
@@ -45,15 +45,6 @@ function generateCardTextBox (card) {
     return generateCardRulesLabel(card, rulesCoords.size.y)
 }
 
-function escapeSpecialCharacters (data) {
-    return data
-        // .replaceAll('\\', '\\u005C')
-        // .replaceAll('(', '\\u0028')
-        // .replaceAll(')', '\\u0029')
-        // .replaceAll('/', '\\u002F')
-        .replaceAll('\'', "ʼ")
-}
-
 function generateCardFlavorLabel (card, posY, sizeY) {
     let {flavor} = card;
 
@@ -83,41 +74,41 @@ function generateManaSymbols (card) {
     //0wubrg
     if (green > 0) {
         for (let i = green; i > 0; i--) {
-            command += " " + foo('assets/g.png');
+            command += " " + foo('assets/mana/G.png');
             posX -= costCoords.size.x
         }
     }
 
     if (red > 0) {
         for (let i = red; i > 0; i--) {
-            command += " " + foo('assets/r.png');
+            command += " " + foo('assets/mana/R.png');
             posX -= costCoords.size.x
         }
     }
 
     if (black > 0) {
         for (let i = black; i > 0; i--) {
-            command += " " + foo('assets/b.png');
+            command += " " + foo('assets/mana/B.png');
             posX -= costCoords.size.x
         }
     }
 
     if (blue > 0) {
         for (let i = blue; i > 0; i--) {
-            command += " " + foo('assets/u.png');
+            command += " " + foo('assets/mana/U.png');
             posX -= costCoords.size.x
         }
     }
 
     if (white > 0) {
         for (let i = white; i > 0; i--) {
-            command += " " + foo('assets/w.png');
+            command += " " + foo('assets/mana/W.png');
             posX -= costCoords.size.x
         }
     }
 
     if (colorless > 0) {
-        command += " " + foo('assets/c.png')
+        command += " " + foo('assets/mana/C.png')
         command += ` \\( -page +${posX}+${posY} -background transparent -size ${40}x${40} -gravity center label:${colorless} \\)`
     }
 
@@ -134,7 +125,11 @@ function generateCardSmallBoxLabel (card) {
         label = smallbox.loalty
     } else if (smallbox.power && smallbox.toughness) {
         label = `${smallbox.power} / ${smallbox.toughness}`
+    } else {
+        return '';
     }
 
     return `\\( -page +${smallboxCoords.pos.x}+${smallboxCoords.pos.y} -background transparent -size ${smallboxCoords.size.x}x${smallboxCoords.size.y} -gravity center label:'${label}' \\)`;
 }
+
+module.exports = {generateCardNameLabel, generateCardTextBox, generateCardTypeLabel, generateManaSymbols, generateCardSmallBoxLabel};

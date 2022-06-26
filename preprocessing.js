@@ -34,7 +34,7 @@ function preprocessHybrid (hybrid) {
 }
 
 function preprocessCost (cost) {
-    let colorless = 0, black = 0, green = 0, red = 0, blue = 0, white = 0;
+    let colorless = 0, black = 0, green = 0, red = 0, blue = 0, white = 0, pink = 0;
     let hybrid = [];
 
     let tmp = "";
@@ -69,7 +69,11 @@ function preprocessCost (cost) {
             case 'w':
                 white++
                 break;
+            case 'p':
+                pink++
+                break;
             default:
+                console.log('ok!', elem);
                 colorless += Number(elem);
         }
     }
@@ -81,7 +85,8 @@ function preprocessCost (cost) {
         red,
         blue,
         white,
-        hybrid
+        hybrid,
+        pink
     }
 }
 
@@ -90,29 +95,28 @@ function preprocessType (card) {
 
     let supertype = "", subtypes = "", loalty = undefined, power = undefined, toughness = undefined;
     let tmpTypes = "";
-    if (type.includes('Enchantment')) {
 
-    } else
-
-        // type contains loyalty if it's a planeswalker
+    // type contains loyalty if it's a planeswalker
     if (type.includes('Planeswalker')) {
         const [tt, post] = type.split('(');
         tmpTypes = tt;
         loalty = Number(post.replace(')', "").replace("Loyalty ", "").trim())
-    } else
-
-        // type contains power/toughness if it's a creature
-    if (type.includes('Creature')) {
+    }
+    // type contains power/toughness if it's a creature
+    else if (type.includes('Creature')) {
         const [tt, post] = type.split('(');
         tmpTypes = tt;
         const [p, t] = post.replace(')', "").split('/');
         power = Number(p.trim());
         toughness = Number(t.trim());
     }
+    else {
+        tmpTypes = type;
+    }
 
     const [sup, sub] = tmpTypes.split(' - ');
-    supertype = sup.trim();
-    subtypes = sub.trim();
+    supertype = sup?.trim() ?? '';
+    subtypes = sub?.trim() ?? '';
 
     return {
         smallbox: {
@@ -123,18 +127,18 @@ function preprocessType (card) {
         type: {
             subtypes,
             supertype,
-        },
-        image: generateImage()
+        }
     }
 }
 
-function preprocessCard (card) {
-    let {cost, rules} = card;
-
-    return {
-        ...card,
-        ...{rules: escapeSpecialCharacters(rules.trim())},
-        ...{cost: preprocessCost(cost)},
-        ...preprocessType(card)
-    }
+function escapeSpecialCharacters (data) {
+    return data
+        // .replaceAll('\\', '\\u005C')
+        // .replaceAll('(', '\\u0028')
+        // .replaceAll(')', '\\u0029')
+        // .replaceAll('/', '\\u002F')
+        .replaceAll('\'', "ʼ")
 }
+
+
+module.exports = {escapeSpecialCharacters, preprocessCost, preprocessType};

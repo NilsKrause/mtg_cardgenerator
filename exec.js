@@ -1,25 +1,24 @@
 fs = require('fs');
 im = require('imagemagick');
-const { exec } = require('child_process');
-const {preprocessCard} = require('preprocessing');
-const {generateCardNameLabel, generateCardTextBox, generateCardTypeLabel, generateManaSymbols, generateCardSmallBoxLabel} = require('generation');
+const { execSync } = require('child_process');
+const {escapeSpecialCharacters, preprocessCost, preprocessType} = require('./preprocessing.js');
+const {generateCardNameLabel, generateCardTextBox, generateCardTypeLabel, generateManaSymbols, generateCardSmallBoxLabel} = require('./generation.js');
 
 function isMulticolor (cost) {
-    if (cost.hybrid.length > 0) {
-
+    if (cost?.hybrid.length > 0) {
         return true;
     }
 
     let count = 0;
-    Array.from(cost).forEach(([k,v]) => {
+    for (const [k, v] of Object.entries(cost)) {
         if (k === 'colorless') {
-            return;
+            continue;
         }
 
         if (v > 0) {
             count++;
         }
-    })
+    }
 
     return count > 1;
 }
@@ -61,141 +60,141 @@ function framePath (frame) {
 }
 
 function pickFrame (card) {
-    const {color, supertype, metatype} = card;
+    const {cost, type} = card;
+    const {supertype} = type;
 
     if (supertype.includes('Planeswalker')) {
         // if it's a planeswalker
-        if (isMulticolor(color)) {
+        if (isMulticolor(cost)) {
             return framePath('PwkM');
         }
-        if (isRed(color)) {
+        if (isRed(cost)) {
             return framePath('PwkR')
         }
-        if (isBlack(color)) {
+        if (isBlack(cost)) {
             return framePath('PwkB')
         }
-        if (isGreen(color)) {
+        if (isGreen(cost)) {
             return framePath('PwkG')
         }
-        if (isPink(color)) {
+        if (isPink(cost)) {
             return framePath('PwkP')
         }
-        if (isBlue(color)) {
+        if (isBlue(cost)) {
             return framePath('PwkU')
         }
-        if (isWhite(color)) {
+        if (isWhite(cost)) {
             return framePath('PwkW')
         }
-        if (isColorless(color)) {
+        if (isColorless(cost)) {
             return framePath('PwkC')
         }
     }
     else if (supertype.includes('Creature')) {
         // if it's a planeswalker
-        if (isMulticolor(color)) {
+        if (isMulticolor(cost)) {
             return framePath('CreatureM');
         }
-        if (isRed(color)) {
+        if (isRed(cost)) {
             return framePath('CreatureR')
         }
-        if (isBlack(color)) {
+        if (isBlack(cost)) {
             return framePath('CreatureB')
         }
-        if (isGreen(color)) {
+        if (isGreen(cost)) {
             return framePath('CreatureG')
         }
-        if (isPink(color)) {
+        if (isPink(cost)) {
             return framePath('CreatureP')
         }
-        if (isBlue(color)) {
+        if (isBlue(cost)) {
             return framePath('CreatureU')
         }
-        if (isWhite(color)) {
+        if (isWhite(cost)) {
             return framePath('CreatureW')
         }
-        if (isColorless(color)) {
+        if (isColorless(cost)) {
             return framePath('CreatureC')
         }
     }
-    else if (metatype.includes("kami") || metatype.includes("double")) {
-        // if it's a planeswalker
-        if (isMulticolor(color)) {
-            return framePath('flipM');
-        }
-        if (isRed(color)) {
-            return framePath('flipR')
-        }
-        if (isBlack(color)) {
-            return framePath('flipB')
-        }
-        if (isGreen(color)) {
-            return framePath('flipG')
-        }
-        if (isPink(color)) {
-            return framePath('flipP')
-        }
-        if (isBlue(color)) {
-            return framePath('flipU')
-        }
-        if (isWhite(color)) {
-            return framePath('flipW')
-        }
-        if (isColorless(color)) {
-            return framePath('flipC')
-        }
-    }
     else {
-        // if it's a planeswalker
-        if (isMulticolor(color)) {
+        if (isMulticolor(cost)) {
             return framePath('NormalM');
         }
-        if (isRed(color)) {
+        if (isRed(cost)) {
             return framePath('NormalR')
         }
-        if (isBlack(color)) {
+        if (isBlack(cost)) {
             return framePath('NormalB')
         }
-        if (isGreen(color)) {
+        if (isGreen(cost)) {
             return framePath('NormalG')
         }
-        if (isPink(color)) {
+        if (isPink(cost)) {
             return framePath('NormalP')
         }
-        if (isBlue(color)) {
+        if (isBlue(cost)) {
             return framePath('NormalU')
         }
-        if (isWhite(color)) {
-            return framePath('fNormalW')
+        if (isWhite(cost)) {
+            return framePath('NormalW')
         }
-        if (isColorless(color)) {
+        if (isColorless(cost)) {
             return framePath('NormalC')
         }
     }
+
+    throw new Error('wtf..');
 }
 
 function generateCard (card) {
     // let {cost, name, rules, flaor, type} = card;
     let frame = pickFrame(card);
-    let outputfile = `output/${Date.now()}_name.png`;
+    console.log('framepath: ', frame);
+    let outputfile = `output/${Date.now()}_${card.name.replace(' ', '_')}.png`;
 
-    exec(`magick -page +0+0 ${frame} ${generateCardTypeLabel(card)} ${generateCardSmallBoxLabel(card)} ${generateCardTextBox(card)} ${generateManaSymbols(card)} ${generateCardNameLabel(card)} -flatten ${outputfile}`,
-        {},
-        (output) => {
-            if (output !== null) {
-                console.log(output)
-            }
-        });
+    const command = `magick -page +0+0 ${frame} ${generateCardTypeLabel(card)} ${generateCardSmallBoxLabel(card)} ${generateCardTextBox(card)} ${generateManaSymbols(card)} ${generateCardNameLabel(card)} -flatten ${outputfile}`;
+    console.log('command: ', command)
 
+    try {
+        const output = execSync(command);
+
+        if (output.length > 0) {
+            console.log('Stdout: ', output.toString());
+            console.log('Card: ', JSON.stringify(card));
+        }
+    } catch (err) {
+        console.log('Error: ', err);
+        console.log('Card: ', JSON.stringify(card));
+    }
+
+    console.log('\n-------------\n');
 }
 
-fs.readFile("test_cards.json", "utf8", (err, data) => {
+function processCard (card, cardNumber, cardAmount) {
+    const start = new Date();
+
+    let {cost, rules} = card;
+    const processedCard = {
+        ...card,
+        ...{rules: escapeSpecialCharacters(rules.trim())},
+        ...{cost: preprocessCost(cost)},
+        ...preprocessType(card)
+    }
+
+    generateCard(processedCard);
+    console.log(`${String(cardNumber).padStart(4, '0')}/${cardAmount} Finished ${processedCard.name} in ${(new Date() - start) / 1000}s.`)
+}
+
+
+fs.readFile("test_cards.json", {encoding: "utf8"}, (err, data) => {
     if (err) {
         return console.log(err);
     }
 
     let cards = JSON.parse(data);
 
-    cards.map(preprocessCard).forEach(generateCard)
+    cards.forEach((card, i) => processCard(card, i+1, cards.length))
 });
 
 console.log('finished reading data')
