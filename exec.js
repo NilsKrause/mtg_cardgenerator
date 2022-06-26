@@ -66,6 +66,14 @@ function bgPath (bg) {
     return `${prefix}${bg}${suffix}`;
 }
 
+function creatureFacePath (face) {
+    return `assets/face/face${face}.png`
+}
+
+function creatureTypePath (type) {
+    return `assets/types/${type}.png`;
+}
+
 function pickFrame (card) {
     const {cost, type} = card;
     const {supertype} = type;
@@ -156,9 +164,14 @@ function pickFrame (card) {
 }
 
 function pickBackground (card) {
-    const {cost} = card;
+    const {cost, type} = card;
     const variant = randomIntBetween(1, 2);
     let c = -1;
+
+    if (type.supertype.includes('Land')) {
+        // if it's a land we do not need a background, we pick a random background as the land artwork
+        return ''
+    }
 
     if (isMulticolor(cost)) {
         c = randomIntBetween(1, 7)
@@ -186,6 +199,92 @@ function pickBackground (card) {
     }
 }
 
+function generateEnchantment (card) {
+
+}
+
+function generateEquipment (card) {
+
+}
+
+function pickFace () {
+    const pickedFace = randomIntBetween(1, 20);
+
+    return creatureFacePath(pickedFace)
+}
+
+function pickType (card) {
+    // pick random creature type
+    const {type} = card;
+    const {subtypes} = type;
+    const stypes = subtypes.split(' ');
+    const pickedType = randomIntBetween(0, stypes.length-1);
+
+    return creatureTypePath(stypes[pickedType])
+}
+
+const types = ['angel', 'cleric', 'dryad', 'faerie', 'goblin', 'human', 'knight', 'myr', 'scout', 'soldier', 'treefolk', 'warrior', 'beast', 'dragon', 'dwarf', 'gargoyle', 'golem', 'illusion', 'merfolk', 'rat', 'shaman', 'spider', 'vampire', 'wizard', 'bird', 'drake', 'elemental', 'giant', 'gorgon', 'insect', 'minion', 'rogue', 'sliver', 'spirit', 'vedalken', 'zombie', 'cat', 'druid', 'elf', 'gnome', 'horror', 'kithkin', 'moonfolk', 'samurai', 'snake', 'thopter', 'viashino'];
+function pickPlaneswalkerBody () {
+    const randomType = randomIntBetween(0, types.length-1);
+    return `-page +0+0 ${creatureTypePath(types[randomType])}`;
+}
+
+function generatePlaneswalker () {
+    return `${pickPlaneswalkerBody()} ${pickFace()}`
+}
+
+function generateCreatue (card) {
+    return `-page +0+0 ${pickType(card)} -page +0+0 ${pickFace()}`
+}
+
+function generateArtifact (card) {
+
+}
+
+function spellEffectPath (effect) {
+    return `assets/sm/sm${effect}.png`;
+}
+
+function spellBgPath (bg) {
+    return `assets/sm/se${bg}.png`;
+}
+
+function generateSpell () {
+    const effect = randomIntBetween(1,7);
+    const bg = randomIntBetween(1,8);
+
+    return `-page +0+0 ${spellBgPath(bg)} -page +0+0 ${spellEffectPath(effect)}`
+}
+
+const backgrounds = ['B1', 'B2', 'C1', 'C2', 'G1', 'G2', 'P1', 'R1', 'R2', 'U1', 'U2', 'W1', 'W2'];
+function generateLand() {
+    const background = backgrounds[randomIntBetween(0, backgrounds.length-1)];
+    return `-page +0+0 ${bgPath(background)}`;
+}
+
+function generateObject (card) {
+    const {type} = card;
+    const {supertype} = type;
+    if (supertype.includes('Creature')) {
+        return generateCreatue(card);
+    }
+    else if (supertype.includes('Enchantment')) {
+        return generateEnchantment(card);
+    }
+    else if (supertype.includes('Artifact')) {
+        return generateArtifact(card);
+    }
+    else if (supertype.includes('Instant') || supertype.includes('Sorcery')) {
+        return generateSpell(card);
+    }
+    else if (supertype.includes('Land')) {
+        return generateLand(card);
+    }
+    else if (supertype.includes('Planeswalker')) {
+        return generatePlaneswalker();
+    }
+}
+
 function generateCard (card) {
     let transparentBG = 'assets/default.png';
 
@@ -194,7 +293,7 @@ function generateCard (card) {
     console.log('framepath: ', frame);
     let outputfile = `output/${Date.now()}_${card.name.replace(' ', '_')}.png`;
 
-    const command = `magick -page +0+0 ${transparentBG} ${pickBackground(card)} -page +0+0 ${frame} ${generateCardTypeLabel(card)} ${generateCardSmallBoxLabel(card)} ${generateCardTextBox(card)} ${generateManaSymbols(card)} ${generateCardNameLabel(card)} -flatten ${outputfile}`;
+    const command = `magick -page +0+0 ${transparentBG} ${pickBackground(card)} ${generateObject(card)} -page +0+0 ${frame} ${generateCardTypeLabel(card)} ${generateCardSmallBoxLabel(card)} ${generateCardTextBox(card)} ${generateManaSymbols(card)} ${generateCardNameLabel(card)} -flatten ${outputfile}`;
     console.log('command: ', command)
 
     try {
