@@ -19,9 +19,10 @@ const smallboxCoords = {
 };
 
 // power/toughness box
+// percent in size, is y/100
 const rulesCoords = {
     pos: {x: 60, y: 695},
-    size: {x: 660, y: 290}
+    size: {x: 660, y: 290, percent: 2.9}
 };
 
 // the pos of the cost need to be calculated.
@@ -39,10 +40,63 @@ function generateCardNameLabel (card) {
     return `\\( -page +${nameCoords.pos.x}+${nameCoords.pos.y} -background transparent -size ${nameCoords.size.x - manacostLength}x${nameCoords.size.y} -gravity west label:'${name}' \\)`;
 }
 
-function generateCardRulesLabel (card) {
+function generateSeperator (posY) {
+    return `\\( assets/seperator.png -page +${rulesCoords.pos.x}+${posY} -background transparent -size ${rulesCoords.size.x}x${rulesCoords.size.y} -gravity center \\)`
+}
+
+function generateCardTextBox (card) {
+    if (card.flavor) {
+        let lbWeight = 100;
+        // the padding between flavor and rules text
+        let padding = 10;
+
+        // count the line breaks and give them a larger weight than a single character as they use up more vertical space
+        let rulesLBCount = card.rules.split(/\r\n|\r|\n/).length;
+        let flavorLBCount = card.flavor.split(/\r\n|\r|\n/).length;
+
+        let rulesCount = card.rules.length + rulesLBCount * lbWeight;
+        let flavorCount = card.flavor.length + flavorLBCount * lbWeight;
+
+        let percent = (flavorCount + rulesCount) / 100;
+
+        let flavorShare = flavorCount / percent;
+        let rulesShare = rulesCount / percent;
+
+        if (flavorShare > 25) {
+            flavorShare = 25;
+            rulesShare = 75;
+        }
+
+        let rulesSizeY = rulesShare * rulesCoords.size.percent;
+
+        let flavorPosY = rulesCoords.pos.y + rulesSizeY + padding;
+        let flavorSizeY = flavorShare * rulesCoords.size.percent - padding;
+
+        return generateCardRulesLabel(card, rulesSizeY) + " " + generateSeperator(flavorPosY-padding) + " " + generateCardFlavorLabel(card,  flavorPosY, flavorSizeY);
+    }
+
+    return generateCardRulesLabel(card, rulesCoords.size.y)
+}
+
+function escapeSpecialCharacters (data) {
+    return data
+        // .replaceAll('\\', '\\u005C')
+        // .replaceAll('(', '\\u0028')
+        // .replaceAll(')', '\\u0029')
+        // .replaceAll('/', '\\u002F')
+        .replaceAll('\'', "ʼ")
+}
+
+function generateCardFlavorLabel (card, posY, sizeY) {
+    let {flavor} = card;
+
+    return `\\( -page +${rulesCoords.pos.x}+${posY} -background transparent -size ${rulesCoords.size.x}x${sizeY} -font 'Roboto-Italic' -gravity center caption:'${flavor}' \\)`;
+}
+
+function generateCardRulesLabel (card, sizeY) {
     let {rules} = card;
 
-    return `\\( -page +${rulesCoords.pos.x}+${rulesCoords.pos.y} -background transparent -size ${rulesCoords.size.x}x${rulesCoords.size.y} -gravity northwest caption:'${rules}' \\)`;
+    return `\\( -page +${rulesCoords.pos.x}+${rulesCoords.pos.y} -background transparent -size ${rulesCoords.size.x}x${sizeY} -font 'Roboto' -gravity northwest caption:'${rules}' \\)`;
 }
 
 function generateCardTypeLabel (card) {
@@ -123,7 +177,7 @@ function generateCard (card) {
     let frame = "assets/frame.png";
     let outputfile = `output/${Date.now()}_name.png`;
 
-    exec(`magick -page +0+0 ${frame} ${generateCardTypeLabel(card)} ${generateCardSmallBoxLabel(card)} ${generateCardRulesLabel(card)} ${generateManaSymbols(card)} ${generateCardNameLabel(card)} -flatten ${outputfile}`,
+    exec(`magick -page +0+0 ${frame} ${generateCardTypeLabel(card)} ${generateCardSmallBoxLabel(card)} ${generateCardTextBox(card)} ${generateManaSymbols(card)} ${generateCardNameLabel(card)} -flatten ${outputfile}`,
         {},
         (output) => {
         if (output !== null) {
@@ -293,7 +347,7 @@ function preprocessCard (card) {
 
     return {
         ...card,
-        ...{rules: rules.trim()},
+        ...{rules: escapeSpecialCharacters(rules.trim())},
         ...{cost: preprocessCost(cost)},
         ...preprocessType(card)
     }
