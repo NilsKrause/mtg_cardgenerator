@@ -22,7 +22,6 @@ function isMulticolor (cost) {
 
     return count > 1;
 }
-
 function isWhite (cost) {
     const {black, green, red, blue, white, pink} = cost;
     return black <= 0 && green <= 0 && red <= 0 && blue <= 0 && white > 0 && pink <= 0;
@@ -47,16 +46,24 @@ function isColorless (cost) {
     const {colorless, black, green, red, blue, white, pink} = cost;
     return colorless >= 0 && black <= 0 && green <= 0 && red <= 0 && blue <= 0 && white <= 0 && pink <= 0;
 }
-
 function isPink (cost) {
     const {colorless, black, green, red, blue, white, pink} = cost;
-    return colorless <= 0 && black <= 0 && green <= 0 && red <= 0 && blue <= 0 && white <= 0 && pink > 0;
+    return black <= 0 && green <= 0 && red <= 0 && blue <= 0 && white <= 0 && pink > 0;
+}
+
+function randomIntBetween(min, max) { // min and max included
+    return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
 function framePath (frame) {
     const prefix = 'assets/frames/';
     const suffix = '.png';
     return `${prefix}${frame}${suffix}`;
+}
+function bgPath (bg) {
+    const prefix = 'assets/bg/bg';
+    const suffix = '.png';
+    return `${prefix}${bg}${suffix}`;
 }
 
 function pickFrame (card) {
@@ -148,13 +155,46 @@ function pickFrame (card) {
     throw new Error('wtf..');
 }
 
+function pickBackground (card) {
+    const {cost} = card;
+    const variant = randomIntBetween(1, 2);
+    let c = -1;
+
+    if (isMulticolor(cost)) {
+        c = randomIntBetween(1, 7)
+    }
+    if (isRed(cost) || c === 1) {
+        return bgPath(`R${variant}`)
+    }
+    if (isBlack(cost) || c === 2) {
+        return bgPath(`B${variant}`)
+    }
+    if (isGreen(cost) || c === 3) {
+        return bgPath(`G${variant}`)
+    }
+    if (isPink(cost) || c === 4) {
+        return bgPath('P1')
+    }
+    if (isBlue(cost) || c === 5) {
+        return bgPath(`U${variant}`)
+    }
+    if (isWhite(cost) || c === 6) {
+        return bgPath(`W${variant}`)
+    }
+    if (isColorless(cost) || c === 7) {
+        return bgPath(`C${variant}`)
+    }
+}
+
 function generateCard (card) {
+    let transparentBG = 'assets/default.png';
+
     // let {cost, name, rules, flaor, type} = card;
     let frame = pickFrame(card);
     console.log('framepath: ', frame);
     let outputfile = `output/${Date.now()}_${card.name.replace(' ', '_')}.png`;
 
-    const command = `magick -page +0+0 ${frame} ${generateCardTypeLabel(card)} ${generateCardSmallBoxLabel(card)} ${generateCardTextBox(card)} ${generateManaSymbols(card)} ${generateCardNameLabel(card)} -flatten ${outputfile}`;
+    const command = `magick -page +0+0 ${transparentBG} ${pickBackground(card)} -page +0+0 ${frame} ${generateCardTypeLabel(card)} ${generateCardSmallBoxLabel(card)} ${generateCardTextBox(card)} ${generateManaSymbols(card)} ${generateCardNameLabel(card)} -flatten ${outputfile}`;
     console.log('command: ', command)
 
     try {
