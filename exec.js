@@ -163,6 +163,31 @@ function pickFrame (card) {
             return framePath('CreatureC')
         }
     }
+    else if (supertype.includes('Land')) {
+        const {addW, addB, addU, addR, addG, addP, addC} = landColors(card);
+        if (addC) {
+            return framePath('NormalC')
+        }
+        if (addR && !(addW || addB || addU || addG || addP)) {
+            return framePath('NormalR')
+        }
+        if (addB && !(addW || addU || addG || addP || addR)) {
+            return framePath('NormalB')
+        }
+        if (addG && !(addW || addU || addP || addR || addB)) {
+            return framePath('NormalG')
+        }
+        if (addP && !(addW || addU || addR || addB || addG)) {
+            return framePath('NormalP')
+        }
+        if (addU && !(addW || addR || addB || addG || addP)) {
+            return framePath('NormalU')
+        }
+        if (addW && !(addR || addB || addG || addP || addU)) {
+            return framePath('NormalW')
+        }
+        return framePath('NormalM');
+    }
     else {
         if (isMulticolor(cost)) {
             return framePath('NormalM');
@@ -341,15 +366,7 @@ function generateSpell () {
     return `-page +0+0 ${spellBgPath(bg)} -page +0+0 ${spellEffectPath(effect)}`
 }
 
-const blackBgs = ['B1', 'B2'];
-const colorlessBgs = ['C1', 'C2'];
-const greenBgs = ['G1', 'G2'];
-// const pinkBgs = ['P1']; // not used, because it's only one bg and it's currently hardcoded
-const redBgs = ['R1', 'R2'];
-const blueBgs = ['U1', 'U2'];
-const whiteBgs = ['W1', 'W2'];
-const backgrounds = [...blackBgs, ...colorlessBgs, ...greenBgs, ...redBgs, ...blueBgs, ...whiteBgs];
-function generateLand(card) {
+function landColors (card) {
     const coloredPattern = new RegExp('add\\s(\\d*[WBURGP]+)[\\s]');
     const colorlessPattern = new RegExp('add\\s\\d\\s');
     colorlessPattern.global = true;
@@ -362,28 +379,49 @@ function generateLand(card) {
     const gPattern = new RegExp('G+');
     const pPattern = new RegExp('P+');
 
-    const coloredResults = coloredPattern.exec(card.rules);
-    const colorless = colorlessPattern.exec(card.rules);
-
-    if ((coloredResults == null || coloredResults.length <= 0) && (colorless !== null) ) {
-        return `-page +0+0 ${bgPath(colorlessBgs[randomIntBetween(0, colorlessBgs.length-1)])}`;
-    }
-
     let addW = false;
     let addB = false;
     let addU = false;
     let addR = false;
     let addG = false;
     let addP = false;
+    let addC = false;
 
-    coloredResults?.forEach(res => {
-        wPattern.test(res) && (addW = true);
-        bPattern.test(res) && (addB = true);
-        uPattern.test(res) && (addU = true);
-        rPattern.test(res) && (addR = true);
-        gPattern.test(res) && (addG = true);
-        pPattern.test(res) && (addP = true);
-    })
+    const coloredResults = coloredPattern.exec(card.rules);
+    const colorless = colorlessPattern.exec(card.rules);
+
+    if ((coloredResults == null || coloredResults.length <= 0) && (colorless !== null) ) {
+        addC = true;
+    }
+
+    if (!addC) {
+        coloredResults?.forEach(res => {
+            wPattern.test(res) && (addW = true);
+            bPattern.test(res) && (addB = true);
+            uPattern.test(res) && (addU = true);
+            rPattern.test(res) && (addR = true);
+            gPattern.test(res) && (addG = true);
+            pPattern.test(res) && (addP = true);
+        })
+    }
+
+    return {addW, addB, addU, addR, addG, addP, addC};
+}
+
+const blackBgs = ['B1', 'B2'];
+const colorlessBgs = ['C1', 'C2'];
+const greenBgs = ['G1', 'G2'];
+// const pinkBgs = ['P1']; // not used, because it's only one bg and it's currently hardcoded
+const redBgs = ['R1', 'R2'];
+const blueBgs = ['U1', 'U2'];
+const whiteBgs = ['W1', 'W2'];
+const backgrounds = [...blackBgs, ...colorlessBgs, ...greenBgs, ...redBgs, ...blueBgs, ...whiteBgs];
+function generateLand(card) {
+    const {addW, addB, addU, addR, addG, addP, addC} = landColors(card);
+
+    if (addC) {
+        return `-page +0+0 ${bgPath(colorlessBgs[randomIntBetween(0, colorlessBgs.length-1)])}`;
+    }
 
     if (addP) {
         return `-page +0+0 ${bgPath('P1')}`;
@@ -512,14 +550,13 @@ function generateCard (card) {
     let transparentBG = 'assets/default.png';
 
     // let {cost, name, rules, flaor, type} = card;
-    let frame = pickFrame(card);
     let outputfile = `output/${Date.now()}_${card.name.replaceAll(' ', '_')}.png`;
 
     const command = `magick -page +0+0 `
         + `${transparentBG} `
         + `${pickBackground(card)} `
         + `${generateObject(card)} `
-        + `-page +0+0 ${frame} `
+        + `-page +0+0 ${pickFrame(card)} `
         + `${generateDoubleCardIndicator(card)} `
         + `${generateCardTypeLabel(card)} `
         + `${generateCardSmallBoxLabel(card)} `
@@ -540,8 +577,8 @@ function generateCard (card) {
             console.log('Card: ', JSON.stringify(card));
         }
     } catch (err) {
-        console.error('Error: ', err);
-        console.error('Card: ', JSON.stringify(card));
+        console.log('Error: ', err);
+        console.log('Card: ', JSON.stringify(card));
     }
 }
 

@@ -128,7 +128,7 @@ function generateManaSymbols (card) {
     let posX = costCoords.pos.x - costCoords.size.x;
     let posY = costCoords.pos.y + 10;
 
-    const foo = (symbol) => `\\( -page +${posX}+${posY} ${symbol} -background transparent -size ${costCoords.size.x}x${costCoords.size.y} -gravity center \\)`
+    const foo = (symbol) => `\\( -page +${posX}+${posY} ${symbol} -background transparent -size ${costCoords.size.x}x${costCoords.size.y} -gravity center \\) `
 
     let command = ""
     //0wubrg
