@@ -12,26 +12,27 @@ function generateSeperator (posY) {
 }
 
 function generateCardTextBox (card) {
-    if (card.flavor) {
-        let lbWeight = 100;
+    if (card.flavor && card.rules.length < 450 && (card.flavor.length + card.rules.length) < 450) {
+        let lbWeight = 20;
         // the padding between flavor and rules text
         let padding = 10;
 
+        // console.log(`|${card.rules}|`);
         // count the line breaks and give them a larger weight than a single character as they use up more vertical space
         let rulesLBCount = card.rules.split(/\r\n|\r|\n/).length;
         let flavorLBCount = card.flavor.split(/\r\n|\r|\n/).length;
 
         let rulesCount = card.rules.length + rulesLBCount * lbWeight;
-        let flavorCount = card.flavor.length + flavorLBCount * lbWeight;
+        let flavorCount = card.flavor.length + flavorLBCount;
 
         let percent = (flavorCount + rulesCount) / 100;
 
         let flavorShare = flavorCount / percent;
         let rulesShare = rulesCount / percent;
 
-        if (flavorShare > 25) {
-            flavorShare = 25;
-            rulesShare = 75;
+        if (flavorShare > 30) {
+            flavorShare = 30;
+            rulesShare = 70;
         }
 
         let rulesSizeY = rulesShare * rulesCoords.size.percent;
@@ -42,6 +43,7 @@ function generateCardTextBox (card) {
         return generateCardRulesLabel(card, rulesSizeY) + " " + generateSeperator(flavorPosY-padding) + " " + generateCardFlavorLabel(card,  flavorPosY, flavorSizeY);
     }
 
+    console.log('ok...', card.rules.length);
     return generateCardRulesLabel(card, rulesCoords.size.y)
 }
 
@@ -60,7 +62,7 @@ function generateCardRulesLabel (card, sizeY) {
 function generateCardTypeLabel (card) {
     let {type} = card;
 
-    const subtype = type.subtypes !== null && type.subtypes !== undefined && type.subtypes.length > 0 && ` - ${type.subtypes}`
+    const subtype = type.subtypes !== null && type.subtypes !== undefined && type.subtypes.length > 0 ? ` - ${type.subtypes}` : ''
 
     return `\\( -page +${typeCoords.pos.x}+${typeCoords.pos.y} -background transparent -size ${typeCoords.size.x}x${typeCoords.size.y} -gravity west label:'${type.supertype}${subtype}' \\)`;
 }

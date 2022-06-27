@@ -501,10 +501,6 @@ function generateDoubleCardIndicatorLabel (card) {
         return '';
     }
 
-    console.log('flip coords: ', flipCoords);
-    console.log('cardname1: ', card.name2);
-    // const name = card?.name2 ?? ' ';
-
     return `\\( -page +${flipCoords.pos.x}+${flipCoords.pos.y} -background transparent -size ${flipCoords.size.x}x${flipCoords.size.y} -gravity west label:'${card.name2}' \\)`
 }
 
@@ -517,7 +513,6 @@ function generateCard (card) {
 
     // let {cost, name, rules, flaor, type} = card;
     let frame = pickFrame(card);
-    console.log('framepath: ', frame);
     let outputfile = `output/${Date.now()}_${card.name.replaceAll(' ', '_')}.png`;
 
     const command = `magick -page +0+0 `
@@ -545,8 +540,8 @@ function generateCard (card) {
             console.log('Card: ', JSON.stringify(card));
         }
     } catch (err) {
-        console.log('Error: ', err);
-        console.log('Card: ', JSON.stringify(card));
+        console.error('Error: ', err);
+        console.error('Card: ', JSON.stringify(card));
     }
 }
 
