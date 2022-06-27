@@ -1,4 +1,4 @@
-name,cost,type,rules,flavor,metatype,name 2,cost2,type2,rules2
+name,cost,type,rules,flavor,metatype,name2,cost2,type2,rules2
 Fupher Shuxeshe,(G/W)(G/W)(G/W),Planeswalker - Fupher (Loyalty 7),"
 +2: search your library for a land card and put it into hand, then shuffle your library
 -3: regenerate target creature
@@ -3821,3 +3821,7 @@ Mark of the End ,4,Enchantment,"
 3GG
 Sorcery
 Choose one: you gain 3 life; or you may put a card from hand onto the battlefield and draw a card",,,,,,
+The Wombo-Combo,2RR,Sorcery,"Deal 1 damage to target creature, then tap it. 
+Then The Wombo Combo deals 2 damage to all tapped creatures.","--Perfection
+– Jonny, Combo player
+",,,,,
