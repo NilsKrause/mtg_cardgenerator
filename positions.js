@@ -29,4 +29,14 @@ const costCoords = {
     size: {x: 42, y: 60}
 }
 
-module.exports = {nameCoords, rulesCoords, typeCoords, costCoords, smallboxCoords}
+const flipCoords = {
+    pos: {x: 55, y: 994},
+    size: {x: 280, y: 38}
+}
+
+const cardsetNumberCoords = {
+    pos: {x: 55, y: 1052},
+    size: {x: 280, y: 33}
+}
+
+module.exports = {nameCoords, rulesCoords, typeCoords, costCoords, smallboxCoords, flipCoords, cardsetNumberCoords}

@@ -104,9 +104,7 @@ function preprocessCost (cost) {
     }
 }
 
-function preprocessType (card) {
-    const {type} = card;
-
+function preprocessType (type) {
     let supertype = "", subtypes = "", loalty = undefined, power = undefined, toughness = undefined;
     let tmpTypes = "";
 

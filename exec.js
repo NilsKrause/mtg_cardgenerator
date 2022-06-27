@@ -3,6 +3,7 @@ im = require('imagemagick');
 const { execSync } = require('child_process');
 const {escapeSpecialCharacters, preprocessCost, preprocessType} = require('./preprocessing.js');
 const {generateCardNameLabel, generateCardTextBox, generateCardTypeLabel, generateManaSymbols, generateCardSmallBoxLabel} = require('./generation.js');
+const {flipCoords, cardsetNumberCoords} = require('./positions');
 
 function isMulticolor (cost) {
     if (cost?.hybrid.length > 0) {
@@ -393,6 +394,65 @@ function generateObject (card) {
     }
 }
 
+function flipIndicatorPath (indi) {
+    return `assets/frames/flip${indi}.png`;
+}
+
+function pickFlipIndicator (card) {
+    const {cost} = card;
+
+    if (isMulticolor(cost)) {
+        return flipIndicatorPath('M');
+    }
+    if (isPink(cost)) {
+        return flipIndicatorPath('P');
+    }
+    if (isWhite(cost)) {
+        return flipIndicatorPath('W');
+    }
+    if (isBlack(cost)) {
+        return flipIndicatorPath('B');
+    }
+    if (isBlue(cost)) {
+        return flipIndicatorPath('U');
+    }
+    if (isRed(cost)) {
+        return flipIndicatorPath('R');
+    }
+    if (isGreen(cost)) {
+        return flipIndicatorPath('G');
+    }
+    if (isColorless(cost)) {
+        return flipIndicatorPath('C');
+    }
+
+    throw new Error('cant define color for flip card...');
+}
+
+function generateDoubleCardIndicator (card) {
+    if (card.metatype === undefined || card.metatype === null) {
+        return '';
+    }
+
+    return `\\( -page +0+0 ${pickFlipIndicator(card)} \\)`;
+}
+
+function generateDoubleCardIndicatorLabel (card) {
+    if (card.metatype === undefined || card.metatype === null | typeof card?.name2 !== "string") {
+        return '';
+    }
+
+    console.log('flip coords: ', flipCoords);
+    console.log('cardname1: ', card.name2);
+    // const name = card?.name2 ?? ' ';
+
+    return `\\( -page +${flipCoords.pos.x}+${flipCoords.pos.y} -background transparent -size ${flipCoords.size.x}x${flipCoords.size.y} -gravity west label:'${card.name2}' \\)`
+}
+
+function generateCardNuberLabel (card) {
+    return `\\( -page +${cardsetNumberCoords.pos.x}+${cardsetNumberCoords.pos.y} -background transparent -size ${cardsetNumberCoords.size.x}x${cardsetNumberCoords.size.y} -fill white -gravity west label:'${String(card.number).padStart(4, '0')}/${card.setnumber}' \\)`
+}
+
 function generateCard (card) {
     let transparentBG = 'assets/default.png';
 
@@ -401,7 +461,21 @@ function generateCard (card) {
     console.log('framepath: ', frame);
     let outputfile = `output/${Date.now()}_${card.name.replaceAll(' ', '_')}.png`;
 
-    const command = `magick -page +0+0 ${transparentBG} ${pickBackground(card)} ${generateObject(card)} -page +0+0 ${frame} ${generateCardTypeLabel(card)} ${generateCardSmallBoxLabel(card)} ${generateCardTextBox(card)} ${generateManaSymbols(card)} ${generateCardNameLabel(card)} -flatten ${outputfile}`;
+    const command = `magick -page +0+0 `
+        + `${transparentBG} `
+        + `${pickBackground(card)} `
+        + `${generateObject(card)} `
+        + `-page +0+0 ${frame} `
+        + `${generateDoubleCardIndicator(card)} `
+        + `${generateCardTypeLabel(card)} `
+        + `${generateCardSmallBoxLabel(card)} `
+        + `${generateCardTextBox(card)} `
+        + `${generateManaSymbols(card)} `
+        + `${generateCardNameLabel(card)} `
+        + `${generateCardNameLabel(card)} `
+        + `${generateDoubleCardIndicatorLabel(card)} `
+        + `${generateCardNuberLabel(card)} `
+        + `-flatten ${outputfile}`;
     console.log('command: ', command)
 
     try {
@@ -418,20 +492,37 @@ function generateCard (card) {
 }
 
 function processCard (card, cardNumber, cardAmount) {
-    const start = new Date();
-
-    let {cost, rules} = card;
-    const processedCard = {
+    let start = new Date();
+    generateCard({
         ...card,
+        ...{number: cardNumber, setnumber: cardAmount},
+        ...{metatype: card.metatype},
         ...{name: escapeSpecialCharacters(card.name)},
         ...{flavor: escapeSpecialCharacters(card.flavor)},
-        ...{rules: escapeSpecialCharacters(rules?.trim() ?? '')},
-        ...{cost: preprocessCost(cost)},
-        ...preprocessType(card)
-    }
+        ...{rules: escapeSpecialCharacters(card.rules?.trim() ?? '')},
+        ...{cost: preprocessCost(card.cost)},
+        ...preprocessType(card.type)
+    });
+    console.log(`${String(cardNumber).padStart(4, '0')}/${cardAmount} Finished ${card.name} in ${(new Date() - start) / 1000}s.`)
 
-    generateCard(processedCard);
-    console.log(`${String(cardNumber).padStart(4, '0')}/${cardAmount} Finished ${processedCard.name} in ${(new Date() - start) / 1000}s.`)
+    if (card.metatype !== null) {
+        console.log('\n');
+        let doublesideStart = new Date();
+
+        // we got a doublesided card
+        generateCard({
+            ...{name2: card.name},
+            ...{number: cardNumber, setnumber: cardAmount},
+            ...{metatype: card.metatype},
+            ...{name: escapeSpecialCharacters(card.name2)},
+            ...{flavor: escapeSpecialCharacters(card.flavor2)},
+            ...{rules: escapeSpecialCharacters(card.rules2?.trim() ?? '')},
+            ...{cost: preprocessCost(card.cost2)},
+            ...preprocessType(card.type2)
+        });
+        console.log(`${String(cardNumber).padStart(4, '0')}/${cardAmount} Finished ${card.name2} in ${(new Date() - doublesideStart) / 1000}s.`)
+        console.log(`Complete duration: ${(new Date() - start) / 1000}s`)
+    }
 }
 
 fs.readFile("cards.json", {encoding: "utf8"}, (err, data) => {
@@ -447,7 +538,7 @@ fs.readFile("cards.json", {encoding: "utf8"}, (err, data) => {
         } catch (err) {
             console.log('error while processing card: ', err, card);
         }
-        console.log('\n-------------\n');
+        console.log('\n-------------\n\n');
     })
 });
 

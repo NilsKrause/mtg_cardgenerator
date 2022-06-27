@@ -1,48 +1,12 @@
 [
   {
-    "name": "pink",
-    "cost": null,
-    "type": "Land",
-    "rules": "~this~ enters the battlefield tapped\n1, T: add P of any color to your mana pool",
-    "flavor": null,
-    "metatype": null,
-    "name 2": null,
-    "cost2": null,
-    "type2": null,
-    "rules2": null
-  },
-  {
-    "name": "colorless",
-    "cost": null,
-    "type": "Land",
-    "rules": "~this~ enters the battlefield tapped\n1, T: add 2 of any color to your mana pool",
-    "flavor": null,
-    "metatype": null,
-    "name 2": null,
-    "cost2": null,
-    "type2": null,
-    "rules2": null
-  },
-  {
-    "name": "green",
-    "cost": null,
-    "type": "Land",
-    "rules": "\nGG, Tap an untapped black creature you control, T: add 2GGG to your mana pool",
-    "flavor": null,
-    "metatype": null,
-    "name 2": null,
-    "cost2": null,
-    "type2": null,
-    "rules2": null
-  },
-  {
     "name": "any background but pink",
     "cost": null,
     "type": "Land",
     "rules": "\n1, Pay 4 life, T, sacrifice ~this~: search your library for a land card and put it into hand, then shuffle your library\nWhen the number of creatures on the battlefield is 3 or more, flip ~this~.\n",
     "flavor": null,
     "metatype": "kami",
-    "name 2": "Ready Grounds",
+    "name2": "Ready Grounds",
     "cost2": null,
     "type2": "Legendary Land",
     "rules2": "Whenever ~this~ is tapped for mana, untap target permanent"
