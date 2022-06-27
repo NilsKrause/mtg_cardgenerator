@@ -284,8 +284,85 @@ function generateSpell () {
     return `-page +0+0 ${spellBgPath(bg)} -page +0+0 ${spellEffectPath(effect)}`
 }
 
-const backgrounds = ['B1', 'B2', 'C1', 'C2', 'G1', 'G2', 'P1', 'R1', 'R2', 'U1', 'U2', 'W1', 'W2'];
-function generateLand() {
+const blackBgs = ['B1', 'B2'];
+const colorlessBgs = ['C1', 'C2'];
+const greenBgs = ['G1', 'G2'];
+// const pinkBgs = ['P1']; // not used, because it's only one bg and it's currently hardcoded
+const redBgs = ['R1', 'R2'];
+const blueBgs = ['U1', 'U2'];
+const whiteBgs = ['W1', 'W2'];
+const backgrounds = [...blackBgs, ...colorlessBgs, ...greenBgs, ...redBgs, ...blueBgs, ...whiteBgs];
+function generateLand(card) {
+    const coloredPattern = new RegExp('add\\s(\\d*[WBURGP]+)[\\s]');
+    const colorlessPattern = new RegExp('add\\s\\d\\s');
+    colorlessPattern.global = true;
+    coloredPattern.global = true;
+
+    const wPattern = new RegExp('W+');
+    const bPattern = new RegExp('B+');
+    const uPattern = new RegExp('U+');
+    const rPattern = new RegExp('R+');
+    const gPattern = new RegExp('G+');
+    const pPattern = new RegExp('P+');
+
+    const coloredResults = coloredPattern.exec(card.rules);
+    const colorless = colorlessPattern.exec(card.rules);
+
+    if ((coloredResults == null || coloredResults.length <= 0) && (colorless !== null) ) {
+        return `-page +0+0 ${bgPath(colorlessBgs[randomIntBetween(0, colorlessBgs.length-1)])}`;
+    }
+
+    let addW = false;
+    let addB = false;
+    let addU = false;
+    let addR = false;
+    let addG = false;
+    let addP = false;
+
+    coloredResults?.forEach(res => {
+        wPattern.test(res) && (addW = true);
+        bPattern.test(res) && (addB = true);
+        uPattern.test(res) && (addU = true);
+        rPattern.test(res) && (addR = true);
+        gPattern.test(res) && (addG = true);
+        pPattern.test(res) && (addP = true);
+    })
+
+    if (addP) {
+        return `-page +0+0 ${bgPath('P1')}`;
+    }
+
+    const selectPool = [];
+
+    if (addW) {
+        // white
+        selectPool.push(...whiteBgs);
+    }
+
+    if (addB) {
+        // black
+        selectPool.push(...blackBgs);
+    }
+
+    if (addU) {
+        // blue
+        selectPool.push(...blueBgs);
+    }
+
+    if (addR) {
+        // red
+        selectPool.push(...redBgs);
+    }
+
+    if (addG) {
+        // green
+        selectPool.push(...greenBgs);
+    }
+
+    if (selectPool.length > 0) {
+        return `-page +0+0 ${bgPath(selectPool[randomIntBetween(0, selectPool.length-1)])}`;
+    }
+
     const background = backgrounds[randomIntBetween(0, backgrounds.length-1)];
     return `-page +0+0 ${bgPath(background)}`;
 }
@@ -309,7 +386,7 @@ function generateObject (card) {
         return generateSpell()
     }
     else if (supertype.includes('Land')) {
-        return generateLand();
+        return generateLand(card);
     }
     else if (supertype.includes('Planeswalker')) {
         return generatePlaneswalker();
