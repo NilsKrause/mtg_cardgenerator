@@ -52,6 +52,31 @@ function isPink (cost) {
     return black <= 0 && green <= 0 && red <= 0 && blue <= 0 && white <= 0 && pink > 0;
 }
 
+function isWhite2 (cost) {
+    const {white, hybrid} = cost;
+    return white > 0  || hybrid.findIndex(h => h.white > 0) !== -1;
+}
+function isBlue2 (cost) {
+    const {blue, hybrid} = cost;
+    return blue > 0 || hybrid.findIndex(h => h.blue > 0) !== -1;
+}
+function isBlack2 (cost) {
+    const {black, hybrid} = cost;
+    return black > 0 || hybrid.findIndex(h => h.black > 0) !== -1;
+}
+function isRed2 (cost) {
+    const {red, hybrid} = cost;
+    return red > 0 || hybrid.findIndex(h => h.red > 0) !== -1;
+}
+function isGreen2 (cost) {
+    const {green, hybrid} = cost;
+    return green > 0 || hybrid.findIndex(h => h.green > 0) !== -1;
+}
+function isPink2 (cost) {
+    const {pink, hybrid} = cost;
+    return pink > 0 || hybrid.findIndex(h => h.pink > 0) !== -1;
+}
+
 function randomIntBetween(min, max) { // min and max included
     return Math.floor(Math.random() * (max - min + 1) + min)
 }
@@ -183,23 +208,23 @@ function pickBackground (card) {
 
     if (isMulticolor(cost)) {
         let seed = [];
-        if (isRed(cost) || c === 1) {
+        if (isRed2(cost)) {
             seed.push('R1', 'R2');
         }
-        if (isBlack(cost) || c === 2) {
+        if (isBlack2(cost)) {
             seed.push('B1', 'B2');
         }
-        if (isGreen(cost) || c === 3) {
+        if (isGreen2(cost)) {
             seed.push('G1', 'G2');
         }
-        if (isBlue(cost) || c === 4) {
+        if (isBlue2(cost)) {
             seed.push('U1', 'U2');
         }
-        if (isWhite(cost) || c === 5) {
+        if (isWhite2(cost)) {
             seed.push('W1', 'W2');
         }
-        if (isColorless(cost) || c === 6) {
-            seed.push('C1', 'C2');
+        if (isPink2(cost)) {
+            seed.push('P1');
         }
 
         return bgPath(seed[randomIntBetween(0, seed.length-1)]);

@@ -1,7 +1,7 @@
 function preprocessHybrid (hybrid) {
     // @todo
     let colors = hybrid.replace("()/", "");
-    let black = 0, green = 0, red = 0, blue = 0, white = 0;
+    let black = 0, green = 0, red = 0, blue = 0, white = 0, pink = 0;
     for (var i = 0; i < colors.length; i++) {
         let color = colors.charAt(i);
         switch (color) {
@@ -17,6 +17,9 @@ function preprocessHybrid (hybrid) {
             case 'g':
                 green++;
                 break;
+            case 'p':
+                pink++;
+                break;
             case 'w':
                 white++
                 break;
@@ -30,6 +33,7 @@ function preprocessHybrid (hybrid) {
         red,
         blue,
         white,
+        pink
     }
 }
 
