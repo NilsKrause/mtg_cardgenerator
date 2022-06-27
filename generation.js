@@ -60,7 +60,9 @@ function generateCardRulesLabel (card, sizeY) {
 function generateCardTypeLabel (card) {
     let {type} = card;
 
-    return `\\( -page +${typeCoords.pos.x}+${typeCoords.pos.y} -background transparent -size ${typeCoords.size.x}x${typeCoords.size.y} -gravity west label:'${type.supertype} - ${type.subtypes}' \\)`;
+    const subtype = type.subtypes !== null && type.subtypes !== undefined && type.subtypes.length > 0 && ` - ${type.subtypes}`
+
+    return `\\( -page +${typeCoords.pos.x}+${typeCoords.pos.y} -background transparent -size ${typeCoords.size.x}x${typeCoords.size.y} -gravity west label:'${type.supertype}${subtype}' \\)`;
 }
 
 function pickHybridName (hybrid) {

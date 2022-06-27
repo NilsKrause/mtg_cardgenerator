@@ -76,8 +76,13 @@ function creatureTypePath (type) {
 }
 
 function pickFrame (card) {
-    const {cost, type} = card;
+    const {type} = card;
     const {supertype} = type;
+
+    let cost = card.cost;
+    if (card.metatype === 'kami' && card.side === 2) {
+        cost = card.cost2;
+    }
 
     if (supertype.includes('Planeswalker')) {
         // if it's a planeswalker
@@ -165,9 +170,11 @@ function pickFrame (card) {
 }
 
 function pickBackground (card) {
-    const {cost, type} = card;
-    const variant = randomIntBetween(1, 2);
-    let c = -1;
+    let {type} = card;
+    let cost = card.cost;
+    if (card.metatype === 'kami' && card.side === 2) {
+        cost = card.cost2;
+    }
 
     if (type.supertype.includes('Land')) {
         // if it's a land we do not need a background, we pick a random background as the land artwork
@@ -175,29 +182,53 @@ function pickBackground (card) {
     }
 
     if (isMulticolor(cost)) {
-        c = randomIntBetween(1, 7)
+        let seed = [];
+        if (isRed(cost) || c === 1) {
+            seed.push('R1', 'R2');
+        }
+        if (isBlack(cost) || c === 2) {
+            seed.push('B1', 'B2');
+        }
+        if (isGreen(cost) || c === 3) {
+            seed.push('G1', 'G2');
+        }
+        if (isBlue(cost) || c === 4) {
+            seed.push('U1', 'U2');
+        }
+        if (isWhite(cost) || c === 5) {
+            seed.push('W1', 'W2');
+        }
+        if (isColorless(cost) || c === 6) {
+            seed.push('C1', 'C2');
+        }
+
+        return bgPath(seed[randomIntBetween(0, seed.length-1)]);
     }
-    if (isRed(cost) || c === 1) {
+
+    const variant = randomIntBetween(1, 2);
+    if (isRed(cost)) {
         return bgPath(`R${variant}`)
     }
-    if (isBlack(cost) || c === 2) {
+    if (isBlack(cost)) {
         return bgPath(`B${variant}`)
     }
-    if (isGreen(cost) || c === 3) {
+    if (isGreen(cost)) {
         return bgPath(`G${variant}`)
     }
-    if (isPink(cost) || c === 4) {
-        return bgPath('P1')
-    }
-    if (isBlue(cost) || c === 5) {
+    if (isBlue(cost)) {
         return bgPath(`U${variant}`)
     }
-    if (isWhite(cost) || c === 6) {
+    if (isWhite(cost)) {
         return bgPath(`W${variant}`)
     }
-    if (isColorless(cost) || c === 7) {
+    if (isColorless(cost)) {
         return bgPath(`C${variant}`)
     }
+    if (isPink(cost)) {
+        return bgPath(`P1`)
+    }
+
+    throw new Error('unknown color combination?!');
 }
 
 function enchBottomPath (n) {
@@ -399,7 +430,10 @@ function flipIndicatorPath (indi) {
 }
 
 function pickFlipIndicator (card) {
-    const {cost} = card;
+    let cost = card.cost;
+    if (card.metatype === 'kami' && card.side === 2) {
+        cost = card.cost2;
+    }
 
     if (isMulticolor(cost)) {
         return flipIndicatorPath('M');
@@ -501,6 +535,7 @@ function processCard (card, cardNumber, cardAmount) {
         ...{flavor: escapeSpecialCharacters(card.flavor)},
         ...{rules: escapeSpecialCharacters(card.rules?.trim() ?? '')},
         ...{cost: preprocessCost(card.cost)},
+        ...{side: 1},
         ...preprocessType(card.type)
     });
     console.log(`${String(cardNumber).padStart(4, '0')}/${cardAmount} Finished ${card.name} in ${(new Date() - start) / 1000}s.`)
@@ -511,13 +546,15 @@ function processCard (card, cardNumber, cardAmount) {
 
         // we got a doublesided card
         generateCard({
-            ...{name2: card.name},
             ...{number: cardNumber, setnumber: cardAmount},
             ...{metatype: card.metatype},
             ...{name: escapeSpecialCharacters(card.name2)},
             ...{flavor: escapeSpecialCharacters(card.flavor2)},
             ...{rules: escapeSpecialCharacters(card.rules2?.trim() ?? '')},
             ...{cost: preprocessCost(card.cost2)},
+            ...{cost2: preprocessCost(card.cost)},
+            ...{name2: card.name},
+            ...{side: 2},
             ...preprocessType(card.type2)
         });
         console.log(`${String(cardNumber).padStart(4, '0')}/${cardAmount} Finished ${card.name2} in ${(new Date() - doublesideStart) / 1000}s.`)
@@ -538,7 +575,7 @@ fs.readFile("cards.json", {encoding: "utf8"}, (err, data) => {
         } catch (err) {
             console.log('error while processing card: ', err, card);
         }
-        console.log('\n-------------\n\n');
+        console.log('\n\n-------------\n\n');
     })
 });
 

@@ -1,5 +1,17 @@
 [
   {
+    "name": "Double Edged Sword",
+    "cost": "1GB",
+    "type": "Artifact - Equipment",
+    "rules": "\nEquip 3\nWhenever equipped creature deals damage to a creature, up to three target artifact creatures get +2/+2 until end of turn\nAll attacking or blocking creatures get +3/+0\nAt the beginning of your end step, target opponent may pay 1. If that player does, flip ~this~.\nDiscard a instant card: target player loses 1 life\n",
+    "flavor": "--The best sofa made of iron sprints\n– Foucault, the great",
+    "metatype": "kami",
+    "name2": "Perfume of Foretelling",
+    "cost2": null,
+    "type2": "Legendary Artifact - Equipment",
+    "rules2": "Whenever you are dealt damage, ~this~ deals 4 damage to each creature \n1, T: up to three target attacking creatures get +1/+1 until end of turn"
+  },
+  {
     "name": "any background but pink",
     "cost": null,
     "type": "Land",
