@@ -497,10 +497,7 @@ function flipIndicatorPath (indi) {
 }
 
 function pickFlipIndicator (card) {
-    let cost = card.cost;
-    if (card.metatype === 'kami' && card.side === 2) {
-        cost = card.cost2;
-    }
+    let cost = card.cost2;
 
     if (isMulticolor(cost)) {
         return flipIndicatorPath('M');
@@ -579,7 +576,6 @@ function generateCard (card) {
         + `${generateCardTextBox(card)} `
         + `${generateManaSymbols(card)} `
         + `${generateCardNameLabel(card)} `
-        + `${generateCardNameLabel(card)} `
         + `${generateDoubleCardIndicatorLabel(card)} `
         + `${generateCardNuberLabel(card)} `
         + `${generateCardSetLabel()} `
@@ -610,6 +606,7 @@ function processCard (card, cardNumber, cardAmount) {
         ...{flavor: escapeSpecialCharacters(card.flavor)},
         ...{rules: escapeSpecialCharacters(card.rules?.trim() ?? '')},
         ...{cost: preprocessCost(card.cost)},
+        ...{cost2: preprocessCost(card.cost2)},
         ...{side: 1},
         ...preprocessType(card.type)
     });
@@ -637,7 +634,7 @@ function processCard (card, cardNumber, cardAmount) {
     }
 }
 
-fs.readFile("test_cards.json", {encoding: "utf8"}, (err, data) => {
+fs.readFile("cards.json", {encoding: "utf8"}, (err, data) => {
     if (err) {
         return console.log(err);
     }

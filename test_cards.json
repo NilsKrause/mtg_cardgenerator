@@ -1,14 +1,14 @@
 [
   {
-    "name": "Spiritground Protector",
-    "cost": "WW",
-    "type": "Artifact Creature - Kithkin Samurai (1/2)",
-    "rules": "\nbushido 4\nWhenever one or more enchantments leaves the battlefield, attach target Equipment to target creature with toughness 6 or more. (Control of that Equipment doesn't change.)\nWhen ~this~ leaves the battlefield, ~this~ deals 7 damage to target attacking or blocking creature. When a creature damaged this way is put into a graveyard from the battlefield this turn, return it to the battlefield under your control\nWhenever ~this~ deals combat damage to a creature, ~this~ deals 5 damage to each attacking or blocking creature and tap that creature",
+    "name": "Smack it",
+    "cost": "3B",
+    "type": "Sorcery",
+    "rules": "\nChoose one: an opponent gets 1 poison counter; or ~this~ deals 1 damage to target player for each card in an opponent's hand and that player draws three cards, then discard three cards\n",
     "flavor": null,
-    "metatype": null,
-    "name2": null,
-    "cost2": null,
-    "type2": null,
-    "rules2": null
+    "metatype": "double",
+    "name2": "Fight it",
+    "cost2": "4UU",
+    "type2": "Sorcery",
+    "rules2": "clash with an opponent. If you win, you may return a enchantment card from your graveyard to the battlefield"
   }
 ]
