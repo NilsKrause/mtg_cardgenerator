@@ -3,7 +3,7 @@ im = require('imagemagick');
 const { execSync } = require('child_process');
 const {escapeSpecialCharacters, preprocessCost, preprocessType} = require('./preprocessing.js');
 const {generateCardNameLabel, generateCardTextBox, generateCardTypeLabel, generateManaSymbols, generateCardSmallBoxLabel} = require('./generation.js');
-const {flipCoords, cardsetNumberCoords} = require('./positions');
+const {flipCoords, cardsetNumberCoords, cardsetNameCoords, artistNameCoords} = require('./positions');
 
 function isMulticolor (cost) {
     if (cost?.hybrid.length > 0) {
@@ -462,6 +462,10 @@ function generateLand(card) {
     return `-page +0+0 ${bgPath(background)}`;
 }
 
+function generateArtistIcon () {
+    return '-page +0+0 assets/frames/artistssymbol.png'
+}
+
 function generateObject (card) {
     const {type} = card;
     const {supertype, subtypes} = type;
@@ -540,6 +544,17 @@ function generateDoubleCardIndicatorLabel (card) {
     }
 
     return `\\( -page +${flipCoords.pos.x}+${flipCoords.pos.y} -background transparent -size ${flipCoords.size.x}x${flipCoords.size.y} -gravity west label:'${card.name2}' \\)`
+
+
+}
+
+function generateArtistLabel () {
+    return `\\( -page +${artistNameCoords.pos.x}+${artistNameCoords.pos.y} -background transparent -size ${artistNameCoords.size.x}x${artistNameCoords.size.y} -fill white -gravity west label:'Roi & Nils' \\)`
+}
+
+
+function generateCardSetLabel () {
+    return `\\( -page +${cardsetNameCoords.pos.x}+${cardsetNameCoords.pos.y} -background transparent -size ${cardsetNameCoords.size.x}x${cardsetNameCoords.size.y} -fill white -gravity west label:'FOA · EN' \\)`
 }
 
 function generateCardNuberLabel (card) {
@@ -558,6 +573,7 @@ function generateCard (card) {
         + `${generateObject(card)} `
         + `-page +0+0 ${pickFrame(card)} `
         + `${generateDoubleCardIndicator(card)} `
+        + `${generateArtistIcon()} `
         + `${generateCardTypeLabel(card)} `
         + `${generateCardSmallBoxLabel(card)} `
         + `${generateCardTextBox(card)} `
@@ -566,6 +582,8 @@ function generateCard (card) {
         + `${generateCardNameLabel(card)} `
         + `${generateDoubleCardIndicatorLabel(card)} `
         + `${generateCardNuberLabel(card)} `
+        + `${generateCardSetLabel()} `
+        + `${generateArtistLabel()} `
         + `-flatten ${outputfile}`;
     console.log('command: ', command)
 
@@ -619,7 +637,7 @@ function processCard (card, cardNumber, cardAmount) {
     }
 }
 
-fs.readFile("cards.json", {encoding: "utf8"}, (err, data) => {
+fs.readFile("test_cards.json", {encoding: "utf8"}, (err, data) => {
     if (err) {
         return console.log(err);
     }
@@ -630,7 +648,7 @@ fs.readFile("cards.json", {encoding: "utf8"}, (err, data) => {
         try {
             processCard(card, i+1, cards.length)
         } catch (err) {
-            console.log('error while processing card: ', err, card);
+            console.log('ERROR! while processing card: ', err, card);
         }
         console.log('\n\n-------------\n\n');
     })

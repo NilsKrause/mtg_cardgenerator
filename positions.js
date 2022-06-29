@@ -34,9 +34,20 @@ const flipCoords = {
     size: {x: 280, y: 38}
 }
 
-const cardsetNumberCoords = {
-    pos: {x: 55, y: 1052},
-    size: {x: 280, y: 33}
+const cardsetNameCoords = {
+    pos: {x: 55, y: 1065},
+    size: {x: 280, y: 24}
 }
 
-module.exports = {nameCoords, rulesCoords, typeCoords, costCoords, smallboxCoords, flipCoords, cardsetNumberCoords}
+const artistNameCoords = {
+    pos: {x: 167, y: 1065},
+    size: {x: 280, y: 24}
+}
+
+
+const cardsetNumberCoords = {
+    pos: {x: 55, y: 1042},
+    size: {x: 280, y: 24}
+}
+
+module.exports = {nameCoords, rulesCoords, typeCoords, costCoords, smallboxCoords, flipCoords, cardsetNumberCoords, cardsetNameCoords, artistNameCoords}

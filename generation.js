@@ -43,7 +43,6 @@ function generateCardTextBox (card) {
         return generateCardRulesLabel(card, rulesSizeY) + " " + generateSeperator(flavorPosY-padding) + " " + generateCardFlavorLabel(card,  flavorPosY, flavorSizeY);
     }
 
-    console.log('ok...', card.rules.length);
     return generateCardRulesLabel(card, rulesCoords.size.y)
 }
 
