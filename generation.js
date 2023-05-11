@@ -12,6 +12,8 @@ function generateSeperator (posY) {
 }
 
 function generateCardTextBox (card) {
+    return `\\( -page +${rulesCoords.pos.x}+${rulesCoords.pos.y} -background transparent -size ${rulesCoords.size.x}x${rulesCoords.size.y} -font 'Roboto' -gravity center caption:'${card.flavor}' \\)`;
+
     if (card.flavor && card.rules.length < 450 && (card.flavor.length + card.rules.length) < 450) {
         let lbWeight = 20;
         // the padding between flavor and rules text

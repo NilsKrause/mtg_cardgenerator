@@ -101,6 +101,9 @@ function creatureTypePath (type) {
 }
 
 function pickFrame (card) {
+
+    return framePath('CreatureW');
+
     const {type} = card;
     const {supertype} = type;
 
@@ -220,6 +223,9 @@ function pickFrame (card) {
 }
 
 function pickBackground (card) {
+
+    return bgPath('W2');
+
     let {type} = card;
     let cost = card.cost;
     if (card.metatype === 'kami' && card.side === 2) {
@@ -469,6 +475,13 @@ function generateArtistIcon () {
 function generateObject (card) {
     const {type} = card;
     const {supertype, subtypes} = type;
+
+    if (card.name.includes('Dreamteam')) {
+        return 'assets/human-duo-token.png';
+    } else {
+        return 'assets/human-token.png';
+    }
+
     if (supertype.includes('Creature')) {
         return generateCreatue(card);
     }
@@ -555,7 +568,7 @@ function generateCardSetLabel () {
 }
 
 function generateCardNuberLabel (card) {
-    return `\\( -page +${cardsetNumberCoords.pos.x}+${cardsetNumberCoords.pos.y} -background transparent -size ${cardsetNumberCoords.size.x}x${cardsetNumberCoords.size.y} -fill white -gravity west label:'${String(card.number).padStart(4, '0')}/${card.setnumber}' \\)`
+    return `\\( -page +${cardsetNumberCoords.pos.x}+${cardsetNumberCoords.pos.y} -background transparent -size ${cardsetNumberCoords.size.x}x${cardsetNumberCoords.size.y} -fill white -gravity west label:'1/1' \\)`
 }
 
 function generateCard (card) {

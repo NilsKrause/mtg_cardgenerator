@@ -18,8 +18,8 @@ const smallboxCoords = {
 // power/toughness box
 // percent in size, is y/100
 const rulesCoords = {
-    pos: {x: 60, y: 695},
-    size: {x: 660, y: 290, percent: 2.9}
+    pos: {x: 60, y: 790},
+    size: {x: 660, y: 100, percent: 2.9}
 };
 
 // the pos of the cost need to be calculated.
